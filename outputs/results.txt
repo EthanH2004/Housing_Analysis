@@ -1,0 +1,9 @@
+LINEAR REGRESSION RESULTS
+
+Coefficients:
+InterestRate: 3641.03
+UnemploymentRate: 1560.39
+
+Intercept: 73280.73
+R^2: 0.3699
+MSE: 69757772.03

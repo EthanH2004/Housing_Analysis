@@ -1,72 +1,84 @@
 # Texas Housing Price Analysis
 
-This project analyzes how economic factors influence housing prices in Texas using linear regression.
+This project studies how economic factors relate to Texas housing prices using a simple linear regression model.
 
-The goal is to understand how variables such as interest rates and unemployment rates impact housing prices, and to quantify their effect.
+The analysis combines housing price data with CPI, interest rate, and unemployment data, calculates inflation-adjusted home prices, and fits a model using `scikit-learn`.
 
-## Project Overview
+## Project Workflow
 
-The pipeline follows a simple workflow:
+The project runs in three simple steps:
 
-1. Load raw housing data
-2. Clean and preprocess the dataset
-3. Fit a linear regression model
-4. Evaluate model performance (R² and coefficients)
-5. Save results for analysis
+1. Merge the raw datasets into one file
+2. Calculate real housing prices using CPI
+3. Train a linear regression model and save the results
 
-## Structure
+## Project Structure
 
-* `data/raw/` — raw input data (e.g. `texas_housing.csv`)
-* `data/processed/` — cleaned datasets
-* `notebooks/eda.ipynb` — exploratory analysis and visualization
-* `src/data_cleaning.py` — handles missing values and prepares data
-* `src/model.py` — runs regression and outputs results
-* `outputs/` — saved model results
+* `data/raw/` - raw source files
+* `data/processed/merged_data.csv` - merged dataset
+* `data/processed/final_dataset.csv` - final cleaned dataset used for modeling
+* `src/merge_data.py` - merges the raw CSV files
+* `src/calculate_real_price.py` - calculates `RealPrice`
+* `src/model.py` - trains the regression model and saves outputs
+* `src/main.py` - runs the full pipeline
+* `outputs/predictions.csv` - actual vs predicted values
+* `outputs/results.txt` - model summary
+* `notebooks/InspectBook.ipynb` - notebook for exploration
 
-## Expected Input
+## Requirements
 
-Place a CSV file at:
+Install dependencies with:
 
-```
-data/raw/texas_housing.csv
-```
-
-With the following columns:
-
-* `price` — housing price
-* `interest_rate` — mortgage or market interest rate
-* `unemployment_rate` — unemployment percentage
-
-## Setup
-
-Install dependencies:
-
-```
+```bash
 pip install -r requirements.txt
 ```
 
-## Run
+## How To Run
 
-```
-python src/data_cleaning.py
-python src/model.py
-```
+Run the full pipeline from the project root:
 
-## Output
-
-* Cleaned dataset:
-
-```
-data/processed/cleaned_housing.csv
+```bash
+python src/main.py
 ```
 
-* Model results:
+This will:
 
-```
-outputs/model_results.json
-```
+* create `data/processed/merged_data.csv`
+* create `data/processed/final_dataset.csv`
+* train the linear regression model
+* save prediction output to `outputs/predictions.csv`
+* save model metrics to `outputs/results.txt`
 
-These results include:
+## Model
 
-* regression coefficients (impact of each variable)
-* R² score (model fit quality)
+The model uses:
+
+* Features: `InterestRate`, `UnemploymentRate`
+* Target: `RealPrice`
+
+It reports:
+
+* regression coefficients
+* intercept
+* `R^2`
+* mean squared error (`MSE`)
+
+## Notes
+
+The CPI and unemployment rate values for `10/1/2025` were missing due to the government shutdown.
+
+To keep the dataset complete, the missing values were filled using the previous month's values with a carry-forward method.
+
+This affects the data files:
+
+* `data/raw/cpi.csv`
+* `data/raw/unemployment_rate.csv`
+
+## Future Improvements
+
+Possible next variables to add:
+
+* mortgage rates
+* income
+* population
+* additional economic indicators

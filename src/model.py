@@ -2,25 +2,20 @@ import pandas as pd
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 
-# load data
 df = pd.read_csv("data/processed/final_dataset.csv")
 
-# features + target
-X = df[["InterestRate", "UnemploymentRate"]]
-y = df["RealPrice"]
+# Features (independent variables) and target (what we're predicting)
+X = df.drop(columns=["DATE", "REALPRICE"])
+y = df["REALPRICE"]
 
-# train model
 model = LinearRegression()
 model.fit(X, y)
 
-# predictions
 y_pred = model.predict(X)
 
-# metrics
 r2 = model.score(X, y)
 mse = mean_squared_error(y, y_pred)
 
-# ===== CLEAN PRINTS =====
 print("\n=== LINEAR REGRESSION RESULTS ===")
 
 print("\nModel Equation:")
@@ -39,12 +34,8 @@ results = pd.DataFrame({
 })
 print(results.head(10))
 
-# ===== SAVE OUTPUTS =====
-
-# save predictions
 results.to_csv("outputs/predictions.csv", index=False)
 
-# save summary text
 with open("outputs/results.txt", "w") as f:
     f.write("LINEAR REGRESSION RESULTS\n\n")
     

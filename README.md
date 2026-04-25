@@ -1,84 +1,84 @@
-# Texas Housing Price Analysis
+# Texas Housing Market Analysis
+**ISQS 3358 – Spring 2026 | Final Project**
 
-This project studies how economic factors relate to Texas housing prices using a simple linear regression model.
+We analyze what economic factors drive real housing prices in Texas from 2015 to 2025. All data is pulled automatically from FRED (Federal Reserve Economic Data) and merged into a single clean dataset used to train a linear regression model.
 
-The analysis combines housing price data with CPI, interest rate, and unemployment data, calculates inflation-adjusted home prices, and fits a model using `scikit-learn`.
+---
 
-## Project Workflow
+## Datasets
 
-The project runs in three simple steps:
+| Variable | FRED Series | Description | Frequency |
+|---|---|---|---|
+| `HomePrice` | TXUCSFRCONDOSMSAMID | Texas median home sale price (dollars) | Monthly |
+| `CPI` | CPIAUCSL | Consumer Price Index – used to inflation-adjust prices | Monthly |
+| `MortgageRate` | MORTGAGE30US | 30-year fixed mortgage rate (%) | Weekly → Monthly avg |
+| `UnemploymentRate` | TXUR | Texas unemployment rate (%) | Monthly |
+| `MedianHouseholdIncome` | MEHOINUSTXA646N | Texas median household income (dollars) | Annual → Monthly fill |
+| `Population` | TXPOP | Texas population (thousands) | Annual → Monthly fill |
+| `HousingStarts` | HOUST | National new housing construction starts (thousands) | Monthly |
 
-1. Merge the raw datasets into one file
-2. Calculate real housing prices using CPI
-3. Train a linear regression model and save the results
+**Target variable:** `REALPRICE` — inflation-adjusted home price calculated as `HomePrice / CPI × 100`
+
+---
 
 ## Project Structure
 
-* `data/raw/` - raw source files
-* `data/processed/merged_data.csv` - merged dataset
-* `data/processed/final_dataset.csv` - final cleaned dataset used for modeling
-* `src/merge_data.py` - merges the raw CSV files
-* `src/calculate_real_price.py` - calculates `RealPrice`
-* `src/model.py` - trains the regression model and saves outputs
-* `src/main.py` - runs the full pipeline
-* `outputs/predictions.csv` - actual vs predicted values
-* `outputs/results.txt` - model summary
-* `notebooks/InspectBook.ipynb` - notebook for exploration
+```
+Housing_Analysis/
+├── src/
+│   ├── main.py                 # Run this — executes the full pipeline
+│   ├── fetch_fred.py           # Downloads all series from FRED
+│   ├── resample_mortgage.py    # Standardizes all series to monthly frequency
+│   ├── merge_data.py           # Joins all raw files into one dataset
+│   ├── calculate_real_price.py # Adjusts home prices for inflation
+│   └── model.py                # Linear regression + saves results
+├── data/
+│   ├── raw/                    # Downloaded CSVs (one per FRED series)
+│   └── processed/
+│       ├── merged_data.csv     # All series joined on DATE
+│       └── final_dataset.csv   # Cleaned dataset used for modeling
+├── outputs/
+│   ├── predictions.csv         # Actual vs predicted REALPRICE
+│   └── results.txt             # R², MSE, and model coefficients
+├── notebooks/
+│   └── InspectBook.ipynb       # Scratch notebook for exploration
+├── final_proj_undergrad.pdf    # Project requirements
+└── requirements.txt
+```
 
-## Requirements
+---
 
-Install dependencies with:
+## Setup
 
 ```bash
+# 1. Create and activate a virtual environment
+python3 -m venv .venv
+source .venv/bin/activate
+
+# 2. Install dependencies
 pip install -r requirements.txt
 ```
 
-## How To Run
-
-Run the full pipeline from the project root:
+## Running the Pipeline
 
 ```bash
 python src/main.py
 ```
 
 This will:
+1. Download all FRED series to `data/raw/`
+2. Standardize everything to monthly frequency
+3. Merge into `data/processed/merged_data.csv`
+4. Calculate inflation-adjusted price → `data/processed/final_dataset.csv`
+5. Train and evaluate a linear regression model
+6. Save outputs to `outputs/`
 
-* create `data/processed/merged_data.csv`
-* create `data/processed/final_dataset.csv`
-* train the linear regression model
-* save prediction output to `outputs/predictions.csv`
-* save model metrics to `outputs/results.txt`
+To add a new FRED variable, add its series ID and a name to the `IDS` dict in `src/main.py` — everything else updates automatically.
 
-## Model
+---
 
-The model uses:
+## Data Notes
 
-* Features: `InterestRate`, `UnemploymentRate`
-* Target: `RealPrice`
-
-It reports:
-
-* regression coefficients
-* intercept
-* `R^2`
-* mean squared error (`MSE`)
-
-## Notes
-
-The CPI and unemployment rate values for `10/1/2025` were missing due to the government shutdown.
-
-To keep the dataset complete, the missing values were filled using the previous month's values with a carry-forward method.
-
-This affects the data files:
-
-* `data/raw/cpi.csv`
-* `data/raw/unemployment_rate.csv`
-
-## Future Improvements
-
-Possible next variables to add:
-
-* mortgage rates
-* income
-* population
-* additional economic indicators
+- **Missing values** (e.g. October 2025 government shutdown) are forward-filled with the previous month's value.
+- **Weekly → Monthly:** Mortgage rate is averaged across all weeks in each month.
+- **Annual → Monthly:** Household income and population are forward-filled from their yearly values since FRED only publishes them once per year. The latest income figure is 2024 (Census Bureau hasn't released 2025 yet).

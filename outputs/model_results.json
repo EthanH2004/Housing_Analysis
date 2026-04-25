@@ -1,9 +1,0 @@
-{
-  "coefficients": {
-    "InterestRate": 3641.03091493511,
-    "UnemploymentRate": 1560.3904546428823
-  },
-  "intercept": 73280.7333670446,
-  "r2": 0.36990940942296735,
-  "rows_used": 132
-}

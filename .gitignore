@@ -1,14 +1,26 @@
+# Python
 __pycache__/
 *.pyc
+*.pyo
 
-.env
-.venv
+# Virtual environments
+.venv/
 venv/
+env/
 
+# Jupyter
 .ipynb_checkpoints/
 
+# IDEs
 .vscode/
 .idea/
 
+# OS
 .DS_Store
 Thumbs.db
+
+# Claude Code — internal config, not needed by teammates
+.claude/
+
+# Env / secrets
+.env

@@ -1,17 +1,20 @@
 import glob
+import os
 import pandas as pd
 
-# Grab every CSV in data/raw/ — add new series there and they'll be included automatically
+os.makedirs("data/processed", exist_ok=True)
+
+# add CSVs to data/raw/ to include them automatically
 files = sorted(glob.glob("data/raw/*.csv"))
 
 df = pd.read_csv(files[0])
 
-# Outer join keeps all months; gaps from short series (e.g. annual Census data) get filled below
+# outer join so no months are lost
 for file in files[1:]:
-    df = df.merge(pd.read_csv(file), on="DATE", how="outer")
+    df = df.merge(pd.read_csv(file), on="Date", how="outer")
 
-df = df.iloc[pd.to_datetime(df["DATE"]).argsort()].reset_index(drop=True)
+df = df.iloc[pd.to_datetime(df["Date"]).argsort()].reset_index(drop=True)
 
-# Fill any missing values with the previous month's value (e.g. annual series, government shutdowns)
+# fill gaps with last known value
 df.ffill(inplace=True)
 df.to_csv("data/processed/merged_data.csv", index=False)

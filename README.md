@@ -1,84 +1,82 @@
-# Texas Housing Market Analysis
-**ISQS 3358 – Spring 2026 | Final Project**
+# U.S. Housing Market Analysis
+**ISQS 3358 – Spring 2026 | Texas Tech University**
 
-We analyze what economic factors drive real housing prices in Texas from 2015 to 2025. All data is pulled automatically from FRED (Federal Reserve Economic Data) and merged into a single clean dataset used to train a linear regression model.
+A regression study on what economic factors drive real U.S. home prices from 1984 to 2025. Data is pulled automatically from FRED, cleaned, and used to train a linear regression model.
 
 ---
 
-## Datasets
+## Findings
 
-| Variable | FRED Series | Description | Frequency |
+The model achieved an **R² of 0.8775**, meaning it explains about 88% of the variation in inflation-adjusted home prices. Median household income had the strongest positive effect on home prices, which makes sense — as people earn more, they can afford more. Mortgage rate and unemployment rate both had negative effects, with higher rates and unemployment pushing prices down. Housing starts (supply) also played a role, with more construction putting downward pressure on prices.
+
+---
+
+## Data
+
+All pulled from [FRED](https://fred.stlouisfed.org/). The dataset runs **January 1984 – December 2025**.
+
+| Variable | FRED ID | Description | Frequency |
 |---|---|---|---|
-| `HomePrice` | TXUCSFRCONDOSMSAMID | Texas median home sale price (dollars) | Monthly |
-| `CPI` | CPIAUCSL | Consumer Price Index – used to inflation-adjust prices | Monthly |
-| `MortgageRate` | MORTGAGE30US | 30-year fixed mortgage rate (%) | Weekly → Monthly avg |
-| `UnemploymentRate` | TXUR | Texas unemployment rate (%) | Monthly |
-| `MedianHouseholdIncome` | MEHOINUSTXA646N | Texas median household income (dollars) | Annual → Monthly fill |
-| `Population` | TXPOP | Texas population (thousands) | Annual → Monthly fill |
-| `HousingStarts` | HOUST | National new housing construction starts (thousands) | Monthly |
+| `HomePrice` | MSPUS | Median U.S. home sale price | Quarterly |
+| `CPI` | CPIAUCSL | Consumer Price Index (for inflation adjustment) | Monthly |
+| `MortgageRate` | MORTGAGE30US | 30-year fixed mortgage rate | Weekly |
+| `UnemploymentRate` | UNRATE | U.S. unemployment rate | Monthly |
+| `MedianHouseholdIncome` | MEHOINUSA646N | U.S. median household income | Annual |
+| `Population` | POPTHM | U.S. total population | Monthly |
+| `HousingStarts` | HOUST | New housing construction starts | Monthly |
 
-**Target variable:** `REALPRICE` — inflation-adjusted home price calculated as `HomePrice / CPI × 100`
+**Target:** `RealPrice` = `HomePrice / CPI × 100` (inflation-adjusted)
+
+Weekly and annual series are automatically resampled to monthly. Missing values are forward-filled.
 
 ---
 
-## Project Structure
+## How It Works
 
+Running `main.py` executes the full pipeline:
+
+1. Downloads every FRED series listed in `IDS` to `data/raw/`
+2. Resamples weekly/annual data to monthly
+3. Merges all series into one dataset
+4. Calculates the inflation-adjusted real price
+5. Runs linear regression and saves results to `outputs/regression/`
+6. Generates all charts and saves them to `outputs/charts/`
+
+**To add a new variable**, just add a line to the `IDS` dict in `main.py`:
+```python
+IDS = {
+    "MSPUS": "HomePrice",
+    "FEDFUNDS": "FedFundsRate",  # ← new variable, that's it
+    ...
+}
 ```
-Housing_Analysis/
-├── src/
-│   ├── main.py                 # Run this — executes the full pipeline
-│   ├── fetch_fred.py           # Downloads all series from FRED
-│   ├── resample_mortgage.py    # Standardizes all series to monthly frequency
-│   ├── merge_data.py           # Joins all raw files into one dataset
-│   ├── calculate_real_price.py # Adjusts home prices for inflation
-│   └── model.py                # Linear regression + saves results
-├── data/
-│   ├── raw/                    # Downloaded CSVs (one per FRED series)
-│   └── processed/
-│       ├── merged_data.csv     # All series joined on DATE
-│       └── final_dataset.csv   # Cleaned dataset used for modeling
-├── outputs/
-│   ├── predictions.csv         # Actual vs predicted REALPRICE
-│   └── results.txt             # R², MSE, and model coefficients
-├── notebooks/
-│   └── InspectBook.ipynb       # Scratch notebook for exploration
-├── final_proj_undergrad.pdf    # Project requirements
-└── requirements.txt
-```
+Everything else — downloading, merging, modeling — picks it up automatically.
 
 ---
 
 ## Setup
 
 ```bash
-# 1. Create and activate a virtual environment
 python3 -m venv .venv
 source .venv/bin/activate
-
-# 2. Install dependencies
 pip install -r requirements.txt
-```
-
-## Running the Pipeline
-
-```bash
 python src/main.py
 ```
 
-This will:
-1. Download all FRED series to `data/raw/`
-2. Standardize everything to monthly frequency
-3. Merge into `data/processed/merged_data.csv`
-4. Calculate inflation-adjusted price → `data/processed/final_dataset.csv`
-5. Train and evaluate a linear regression model
-6. Save outputs to `outputs/`
-
-To add a new FRED variable, add its series ID and a name to the `IDS` dict in `src/main.py` — everything else updates automatically.
-
 ---
 
-## Data Notes
+## Project Structure
 
-- **Missing values** (e.g. October 2025 government shutdown) are forward-filled with the previous month's value.
-- **Weekly → Monthly:** Mortgage rate is averaged across all weeks in each month.
-- **Annual → Monthly:** Household income and population are forward-filled from their yearly values since FRED only publishes them once per year. The latest income figure is 2024 (Census Bureau hasn't released 2025 yet).
+```
+src/
+├── main.py                 # run this
+├── fetch_fred.py           # downloads data from FRED
+├── resampler.py            # standardizes all series to monthly
+├── merge_data.py           # merges raw files into one dataset
+├── calculate_real_price.py # inflation-adjusts home prices
+├── model.py                # linear regression + saves results
+└── InspectBook.ipynb       # charts and exploration
+outputs/
+├── charts/                 # all generated plots (.png)
+└── regression/             # predictions.csv and results.txt
+```

@@ -19,6 +19,10 @@ env/
 .DS_Store
 Thumbs.db
 
+# Generated data and outputs — recreated by running main.py
+data/
+outputs/
+
 # Claude Code — internal config, not needed by teammates
 .claude/
 

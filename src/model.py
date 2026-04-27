@@ -1,12 +1,15 @@
+import os
 import pandas as pd
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 
+os.makedirs("outputs/regression", exist_ok=True)
+
 df = pd.read_csv("data/processed/final_dataset.csv")
 
-# Features (independent variables) and target (what we're predicting)
-X = df.drop(columns=["DATE", "REALPRICE"])
-y = df["REALPRICE"]
+# features and target
+X = df.drop(columns=["Date", "RealPrice"])
+y = df["RealPrice"]
 
 model = LinearRegression()
 model.fit(X, y)
@@ -34,15 +37,13 @@ results = pd.DataFrame({
 })
 print(results.head(10))
 
-results.to_csv("outputs/predictions.csv", index=False)
+results.to_csv("outputs/regression/predictions.csv", index=False)
 
-with open("outputs/results.txt", "w") as f:
+with open("outputs/regression/results.txt", "w") as f:
     f.write("LINEAR REGRESSION RESULTS\n\n")
-    
     f.write("Coefficients:\n")
     for name, coef in zip(X.columns, model.coef_):
         f.write(f"{name}: {coef:.2f}\n")
-    
     f.write(f"\nIntercept: {model.intercept_:.2f}\n")
     f.write(f"R^2: {r2:.4f}\n")
     f.write(f"MSE: {mse:.2f}\n")

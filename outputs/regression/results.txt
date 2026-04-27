@@ -1,0 +1,12 @@
+LINEAR REGRESSION RESULTS
+
+Coefficients:
+HousingStarts: 7.52
+MedianHouseholdIncome: 0.55
+MortgageRate: -847.33
+Population: 0.20
+UnemploymentRate: -1338.69
+
+Intercept: 27035.89
+R^2: 0.8775
+MSE: 42854693.99

@@ -24,3 +24,7 @@ Thumbs.db
 
 # Env / secrets
 .env
+
+# Presentation generator scripts (outputs are tracked, not the scripts)
+src/make_slides.py
+src/make_script.py

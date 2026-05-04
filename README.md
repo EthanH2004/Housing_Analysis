@@ -1,13 +1,23 @@
 # U.S. Housing Market Analysis
 **ISQS 3358 – Spring 2026 | Texas Tech University**
 
-A regression study on what economic factors drive real U.S. home prices from 1984 to 2025. Data is pulled automatically from FRED, cleaned, and used to train a linear regression model.
+Samuel Melghem · Omar Hernandez · Ryan Rhodes · Ethan Hennenhoefer · Logan Crider
+
+A regression study on what economic factors drive real U.S. home prices from 1984 to 2025. Data is pulled automatically from FRED, cleaned, merged, and used to train a linear regression model.
 
 ---
 
 ## Findings
 
-The model achieved an **R² of 0.8775**, meaning it explains about 88% of the variation in inflation-adjusted home prices. Median household income had the strongest positive effect on home prices, which makes sense — as people earn more, they can afford more. Mortgage rate and unemployment rate both had negative effects, with higher rates and unemployment pushing prices down. Housing starts (supply) also played a role, with more construction putting downward pressure on prices.
+The model achieved an **R² of 0.8775**, meaning it explains about 88% of the variation in inflation-adjusted home prices across 40 years of data.
+
+**Key results:**
+- **Mortgage rate** had the strongest negative effect — every 1% increase in the 30-year rate corresponds to roughly an $847 drop in real home price. The four-decade decline from 14% to 3% quietly subsidized price growth the entire time.
+- **Unemployment rate** also had a strong negative effect — job losses reduce buying power and force distressed selling. The 2008 crash shows this clearly.
+- **Median household income** had the strongest positive effect — as earnings grow, buyers qualify for larger mortgages and bid prices higher.
+- **Population** and **housing starts** both had small positive effects.
+
+**Affordability:** The price-to-income ratio more than doubled from 1984 to 2025 — from roughly 3.5× to over 7× median annual income. Nominal prices rose ~5×, but inflation-adjusted real prices rose about 2×. Inflation accounts for most of the apparent price explosion.
 
 ---
 
@@ -25,15 +35,15 @@ All pulled from [FRED](https://fred.stlouisfed.org/). The dataset runs **January
 | `Population` | POPTHM | U.S. total population | Monthly |
 | `HousingStarts` | HOUST | New housing construction starts | Monthly |
 
-**Target:** `RealPrice` = `HomePrice / CPI × 100` (inflation-adjusted)
+**Target variable:** `RealPrice` = `HomePrice / CPI × 100` (inflation-adjusted home price)
 
-Weekly and annual series are automatically resampled to monthly. Missing values are forward-filled.
+Weekly data is averaged to monthly. Annual data is forward-filled month-to-month. Missing values are forward-filled after merging.
 
 ---
 
 ## How It Works
 
-Running `main.py` executes the full pipeline:
+Running `main.py` executes the full pipeline in one command:
 
 1. Downloads every FRED series listed in `IDS` to `data/raw/`
 2. Resamples weekly/annual data to monthly
@@ -42,7 +52,7 @@ Running `main.py` executes the full pipeline:
 5. Runs linear regression and saves results to `outputs/regression/`
 6. Generates all charts and saves them to `outputs/charts/`
 
-**To add a new variable**, just add a line to the `IDS` dict in `main.py`:
+**To add a new variable**, add one line to the `IDS` dict in `main.py`:
 ```python
 IDS = {
     "MSPUS": "HomePrice",
@@ -50,7 +60,7 @@ IDS = {
     ...
 }
 ```
-Everything else — downloading, merging, modeling — picks it up automatically.
+Everything else — downloading, merging, modeling, charting — picks it up automatically.
 
 ---
 
@@ -65,18 +75,32 @@ python src/main.py
 
 ---
 
+## Outputs
+
+| File | Description |
+|---|---|
+| `outputs/regression/results.txt` | Coefficients, R², MSE |
+| `outputs/regression/predictions.csv` | Actual vs. predicted for every month |
+| `outputs/charts/*.png` | All generated charts |
+| `outputs/housing_analysis.pptx` | Final presentation slides |
+| `outputs/presentation_script.docx` | Speaker script (outline + word-for-word) |
+
+---
+
 ## Project Structure
 
 ```
 src/
-├── main.py                 # run this
+├── main.py                 # run this — executes the full pipeline
 ├── fetch_fred.py           # downloads data from FRED
 ├── resampler.py            # standardizes all series to monthly
 ├── merge_data.py           # merges raw files into one dataset
 ├── calculate_real_price.py # inflation-adjusts home prices
 ├── model.py                # linear regression + saves results
-└── InspectBook.ipynb       # charts and exploration
+└── InspectBook.ipynb       # charts and exploratory analysis
 outputs/
 ├── charts/                 # all generated plots (.png)
-└── regression/             # predictions.csv and results.txt
+├── regression/             # predictions.csv and results.txt
+├── housing_analysis.pptx   # presentation slides
+└── presentation_script.docx # speaker script
 ```

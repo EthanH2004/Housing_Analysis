@@ -25,6 +25,10 @@ Thumbs.db
 # Env / secrets
 .env
 
+# Project files not needed in the repo
+final_proj_undergrad.pdf
+TODO.md
+
 # Presentation generator scripts (outputs are tracked, not the scripts)
 src/make_slides.py
 src/make_script.py

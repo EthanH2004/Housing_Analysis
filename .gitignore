@@ -29,6 +29,6 @@ Thumbs.db
 final_proj_undergrad.pdf
 TODO.md
 
-# Presentation generator scripts (outputs are tracked, not the scripts)
+# Presentation generator scripts (outputs are tracked, scripts are not)
 src/make_slides.py
 src/make_script.py

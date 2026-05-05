@@ -1,7 +1,7 @@
 # U.S. Housing Market Analysis
 **ISQS 3358 – Spring 2026 | Texas Tech University**
 
-Samuel Melghem · Omar Hernandez · Ryan Rhodes · Ethan Hennenhoefer · Logan Crider
+Samuel Melghem · Omar Hernandez · Ryan Rhodes · Ethan Hennenhoefer · Logan Crider · Dylan Wallace
 
 A regression study on what economic factors drive real U.S. home prices from 1984 to 2025. Data is pulled automatically from FRED, cleaned, merged, and used to train a linear regression model.
 

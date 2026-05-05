@@ -81,8 +81,6 @@ python src/main.py
 | `outputs/regression/results.txt` | Coefficients, R², MSE |
 | `outputs/regression/predictions.csv` | Actual vs. predicted for every month |
 | `outputs/charts/*.png` | All generated charts |
-| `outputs/housing_analysis.pptx` | Final presentation slides |
-| `outputs/presentation_script.docx` | Speaker script (outline + word-for-word) |
 
 ---
 
@@ -100,6 +98,4 @@ src/
 outputs/
 ├── charts/                 # all generated plots (.png)
 ├── regression/             # predictions.csv and results.txt
-├── housing_analysis.pptx   # presentation slides
-└── presentation_script.docx # speaker script
 ```
